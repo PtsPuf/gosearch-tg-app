@@ -20,6 +20,9 @@ type SearchResult struct {
 
 // Handler is the main entry point for Vercel serverless function
 func Handler(w http.ResponseWriter, r *http.Request) {
+	// Log the incoming request path and method for debugging
+	log.Printf("Received request: Method=%s, Path=%s, URL=%s", r.Method, r.URL.Path, r.URL.String())
+
 	// Enable CORS
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
