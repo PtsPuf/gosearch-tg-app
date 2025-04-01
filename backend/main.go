@@ -273,7 +273,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	// Handle root endpoint
 	if r.URL.Path == "/" {
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("GoSearch Telegram API is running via Vercel with multi-site check (embedded data)"))
+		w.Write([]byte("GoSearch API (Vercel) with multi-site check (embedded data)"))
 		return
 	}
 
