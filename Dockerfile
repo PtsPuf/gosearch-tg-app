@@ -28,28 +28,30 @@ COPY backend/ .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /app/server main.go
 
 # Этап 2: Создание минимального финального образа
-# Используем базовый образ Alpine Linux (очень маленький)
-FROM alpine:latest
+# Используем базовый образ Alpine Linux той же версии, что и builder (примерно)
+FROM alpine:3.19 AS final
 
 # Копируем корневые сертификаты из сборщика
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Копируем бинарный файл gosearch из сборщика
-# Путь может отличаться, если `go install` устанавливает в другое место
-# Обычно это /go/bin/gosearch внутри стандартного golang образа
 COPY --from=builder /go/bin/gosearch /usr/local/bin/gosearch
 
 # Копируем скомпилированное приложение из сборщика
 COPY --from=builder /app/server /app/server
 
-# Добавляем права на выполнение для бинарного файла
-RUN chmod +x /app/server
+# Добавляем права на выполнение для бинарных файлов
+RUN chmod +x /app/server /usr/local/bin/gosearch
 
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
+# Диагностика: Проверяем наличие и права файлов перед запуском
+RUN ls -l /app
+RUN ls -l /usr/local/bin/gosearch
+
 # Открываем порт, который слушает наше приложение
 EXPOSE 8080
 
-# Команда для запуска приложения при старте контейнера
-CMD ["/app/server"] 
+# Команда для запуска приложения при старте контейнера (относительно WORKDIR)
+CMD ["./server"] 
