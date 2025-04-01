@@ -8,7 +8,11 @@
     ],
     "routes": [
         {
-            "src": "/(.*)",
+            "src": "/search",
+            "dest": "backend/main.go"
+        },
+        {
+            "src": "/",
             "dest": "backend/main.go"
         }
     ]
