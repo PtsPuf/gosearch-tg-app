@@ -42,6 +42,9 @@ COPY --from=builder /go/bin/gosearch /usr/local/bin/gosearch
 # Копируем скомпилированное приложение из сборщика
 COPY --from=builder /app/server /app/server
 
+# Добавляем права на выполнение для бинарного файла
+RUN chmod +x /app/server
+
 # Устанавливаем рабочую директорию
 WORKDIR /app
 
