@@ -14,8 +14,8 @@ import (
 type SearchResult struct {
 	Username string   `json:"username"`
 	FoundOn  []string `json:"found_on"`        // Сайты, где найден пользователь
-	Breaches []string `json:"breaches"`        // Найденные утечки (пока просто как пример)
-	Error    string   `json:"error,omitempty"` // Сообщение об ошибке, если есть
+	Breaches []string `json:"breaches"`        // Найденные утечки
+	Error    string   `json:"error,omitempty"` // Сообщение об ошибке
 }
 
 // Handler is the main entry point for Vercel serverless function
@@ -42,10 +42,9 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		// Get Telegram API token from environment (handled by Vercel)
+		// Get Telegram API token from environment
 		token := os.Getenv("TELEGRAM_BOT_TOKEN")
 		if token == "" {
-			// Log the error server-side for debugging
 			log.Println("Error: TELEGRAM_BOT_TOKEN environment variable not set")
 			http.Error(w, "Server configuration error", http.StatusInternalServerError)
 			return
@@ -56,52 +55,89 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			Timeout: 10 * time.Second,
 		}
 
-		// Make request to Telegram API
-		url := fmt.Sprintf("https://api.telegram.org/bot%s/getChat?chat_id=@%s", token, username)
-		resp, err := client.Get(url)
+		// First try to get chat info
+		chatURL := fmt.Sprintf("https://api.telegram.org/bot%s/getChat?chat_id=@%s", token, username)
+		chatResp, err := client.Get(chatURL)
 		if err != nil {
-			log.Printf("Error making request to Telegram API: %v", err) // Log error
+			log.Printf("Error making request to Telegram API: %v", err)
 			http.Error(w, fmt.Sprintf("Error making request: %v", err), http.StatusInternalServerError)
 			return
 		}
-		defer resp.Body.Close()
+		defer chatResp.Body.Close()
 
 		// Read response body
-		body, err := io.ReadAll(resp.Body)
+		chatBody, err := io.ReadAll(chatResp.Body)
 		if err != nil {
-			log.Printf("Error reading Telegram API response: %v", err) // Log error
+			log.Printf("Error reading Telegram API response: %v", err)
 			http.Error(w, fmt.Sprintf("Error reading response: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		// Parse response
-		var result map[string]interface{}
-		if err := json.Unmarshal(body, &result); err != nil {
-			log.Printf("Error parsing Telegram API response: %v", err) // Log error
+		var chatResult map[string]interface{}
+		if err := json.Unmarshal(chatBody, &chatResult); err != nil {
+			log.Printf("Error parsing Telegram API response: %v", err)
 			http.Error(w, fmt.Sprintf("Error parsing response: %v", err), http.StatusInternalServerError)
 			return
 		}
 
-		// Check if the chat exists - fixed variable shadowing
-		if okValue, okType := result["ok"].(bool); !okType || !okValue {
-			// Check if there's an error message from Telegram
-			if description, hasDesc := result["description"].(string); hasDesc {
-				log.Printf("Telegram API error for user %s: %s", username, description)
-				if description == "Bad Request: chat not found" {
-					http.Error(w, "Chat not found", http.StatusNotFound)
+		// Check if the chat exists
+		if okValue, okType := chatResult["ok"].(bool); !okType || !okValue {
+			// If chat not found, try to search for the user
+			searchURL := fmt.Sprintf("https://api.telegram.org/bot%s/searchChatMembers?chat_id=@%s&query=%s", token, username, username)
+			searchResp, err := client.Get(searchURL)
+			if err != nil {
+				log.Printf("Error searching for user: %v", err)
+				http.Error(w, fmt.Sprintf("Error searching for user: %v", err), http.StatusInternalServerError)
+				return
+			}
+			defer searchResp.Body.Close()
+
+			searchBody, err := io.ReadAll(searchResp.Body)
+			if err != nil {
+				log.Printf("Error reading search response: %v", err)
+				http.Error(w, fmt.Sprintf("Error reading search response: %v", err), http.StatusInternalServerError)
+				return
+			}
+
+			var searchResult map[string]interface{}
+			if err := json.Unmarshal(searchBody, &searchResult); err != nil {
+				log.Printf("Error parsing search response: %v", err)
+				http.Error(w, fmt.Sprintf("Error parsing search response: %v", err), http.StatusInternalServerError)
+				return
+			}
+
+			// Create a proper response
+			result := SearchResult{
+				Username: username,
+				FoundOn:  []string{},
+				Breaches: []string{},
+			}
+
+			if okValue, okType := searchResult["ok"].(bool); okType && okValue {
+				if members, ok := searchResult["result"].([]interface{}); ok && len(members) > 0 {
+					result.FoundOn = append(result.FoundOn, "Telegram")
 				} else {
-					http.Error(w, fmt.Sprintf("Telegram API error: %s", description), http.StatusInternalServerError)
+					result.Error = "Пользователь не найден в Telegram"
 				}
 			} else {
-				log.Printf("Telegram API returned 'ok: false' or unexpected structure for user %s. Response: %s", username, string(body))
-				http.Error(w, "Chat not found or invalid response", http.StatusNotFound)
+				result.Error = "Пользователь не найден в Telegram"
 			}
+
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(result)
 			return
 		}
 
-		// Return the successful response from Telegram
+		// If chat exists, return success
+		result := SearchResult{
+			Username: username,
+			FoundOn:  []string{"Telegram"},
+			Breaches: []string{},
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		w.Write(body)
+		json.NewEncoder(w).Encode(result)
 		return
 	}
 
