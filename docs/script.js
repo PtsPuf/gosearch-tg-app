@@ -11,7 +11,7 @@ const resultsContainer = document.getElementById('results');
 
 // URL вашего бэкенда (замените на URL вашего сервиса на Render.com после деплоя)
 // Для локального тестирования можно использовать http://localhost:8080
-const BACKEND_URL = 'https://ваше-имя-сервиса.onrender.com'; // ЗАМЕНИТЬ!
+const BACKEND_URL = 'https://gosearch-tg-backend.onrender.com'; // ЗАМЕНИТЬ!
 // const BACKEND_URL = 'http://localhost:8080'; // Для локального теста
 
 // Функция для отображения результатов
