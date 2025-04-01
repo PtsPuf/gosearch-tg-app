@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	_ "embed" // Импортируем для //go:embed
 	"encoding/json"
 	"fmt"
 	"io"
@@ -25,6 +26,12 @@ type SiteInfo struct {
 	// UserAgent string `json:"user_agent,omitempty"`
 }
 
+// Встраиваем data.json в переменную sitesData
+// Путь "data.json" здесь относителен к файлу main.go
+//
+//go:embed data.json
+var sitesData []byte
+
 // Глобальная переменная для хранения данных сайтов
 var sites []SiteInfo
 var once sync.Once // Для однократной загрузки data.json
@@ -32,14 +39,14 @@ var once sync.Once // Для однократной загрузки data.json
 // Функция для загрузки data.json
 func loadSites() {
 	once.Do(func() {
-		data, err := os.ReadFile("backend/data.json") // Убедитесь, что путь правильный
-		if err != nil {
-			log.Fatalf("Error reading data.json: %v", err)
+		// Читаем из встроенной переменной sitesData
+		if err := json.Unmarshal(sitesData, &sites); err != nil {
+			log.Fatalf("Error unmarshalling embedded data.json: %v", err)
 		}
-		if err := json.Unmarshal(data, &sites); err != nil {
-			log.Fatalf("Error unmarshalling data.json: %v", err)
+		if len(sites) == 0 {
+			log.Fatalf("Embedded data.json seems empty or invalid")
 		}
-		log.Printf("Loaded %d sites from data.json", len(sites))
+		log.Printf("Loaded %d sites from embedded data.json", len(sites))
 	})
 }
 
@@ -61,13 +68,16 @@ func checkSite(ctx context.Context, client *http.Client, site SiteInfo, username
 	}
 	targetURL := strings.Replace(checkURL, "{}", username, 1)
 
+	// Добавляем User-Agent, чтобы имитировать браузер
+	userAgent := "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+
 	req, err := http.NewRequestWithContext(ctx, "GET", targetURL, nil)
 	if err != nil {
 		// Не логируем ошибку создания запроса, т.к. их может быть много
 		// log.Printf("Error creating request for %s: %v", site.Name, err)
 		return
 	}
-	// TODO: Добавить User-Agent, если нужно
+	req.Header.Set("User-Agent", userAgent)
 
 	resp, err := client.Do(req)
 	if err != nil {
@@ -176,16 +186,17 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 
 		// --- Проверка Telegram ---
 		var wgTelegram sync.WaitGroup
-		telegramFoundChan := make(chan bool, 1) // Канал для результата Telegram
+		telegramFoundChan := make(chan bool, 1)
 		wgTelegram.Add(1)
 		go func() {
 			defer wgTelegram.Done()
-			// First try to get chat info
 			chatURL := fmt.Sprintf("https://api.telegram.org/bot%s/getChat?chat_id=@%s", token, username)
-			chatResp, err := client.Get(chatURL) // Используем тот же клиент
+			reqTg, _ := http.NewRequest("GET", chatURL, nil)  // Создаем запрос для добавления User-Agent
+			reqTg.Header.Set("User-Agent", "GoSearchBot/1.0") // Добавляем User-Agent
+			chatResp, err := client.Do(reqTg)
 			if err != nil {
 				log.Printf("Error making request to Telegram API getChat: %v", err)
-				telegramFoundChan <- false // Ошибка, считаем что не нашли
+				telegramFoundChan <- false
 				return
 			}
 			defer chatResp.Body.Close()
@@ -193,35 +204,30 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 			chatBody, err := io.ReadAll(chatResp.Body)
 			if err != nil {
 				log.Printf("Error reading Telegram API getChat response: %v", err)
-				telegramFoundChan <- false // Ошибка, считаем что не нашли
+				telegramFoundChan <- false
 				return
 			}
 
 			var chatResult map[string]interface{}
 			if err := json.Unmarshal(chatBody, &chatResult); err != nil {
 				log.Printf("Error parsing Telegram API getChat response: %v", err)
-				telegramFoundChan <- false // Ошибка, считаем что не нашли
+				telegramFoundChan <- false
 				return
 			}
 
 			if okValue, okType := chatResult["ok"].(bool); okType && okValue {
-				telegramFoundChan <- true // Чат найден
+				telegramFoundChan <- true
 				return
 			}
-
-			// Chat not found via getChat, try search (this might require bot permissions)
-			// For simplicity, we'll stick to getChat for now. If needed, add searchChatMembers logic here.
-			// log.Printf("Telegram chat not found for @%s via getChat.", username)
-			telegramFoundChan <- false // Чат не найден
-
+			telegramFoundChan <- false
 		}()
 
 		// --- Проверка сайтов из data.json ---
 		var wgSites sync.WaitGroup
 		resultsChan := make(chan string, len(sites)) // Канал для имен найденных сайтов
 		// Контекст с таймаутом для всех проверок сайтов
-		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-		defer cancel() // Важно отменить контекст
+		ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second) // Уменьшил таймаут для сайтов
+		defer cancel()                                                           // Важно отменить контекст
 
 		for _, site := range sites {
 			wgSites.Add(1)
@@ -267,7 +273,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	// Handle root endpoint
 	if r.URL.Path == "/" {
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("GoSearch Telegram API is running via Vercel with multi-site check"))
+		w.Write([]byte("GoSearch Telegram API is running via Vercel with multi-site check (embedded data)"))
 		return
 	}
 
