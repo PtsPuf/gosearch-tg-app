@@ -1,12 +1,12 @@
 /* Хакерские стили для приложения */
 :root {
-    --hacker-bg: #000000;
-    --hacker-text: #00ff00;
-    --hacker-dim: #005500;
-    --hacker-highlight: #00ff55;
-    --hacker-accent: #ff0000;
-    --hacker-box-bg: #001100;
-    --hacker-border: #003300;
+    --hacker-bg: #001100;
+    --hacker-text: #00ff66;
+    --hacker-dim: #33cc66;
+    --hacker-highlight: #00ffaa;
+    --hacker-accent: #ff5555;
+    --hacker-box-bg: #002200;
+    --hacker-border: #004400;
 }
 
 body {
@@ -214,7 +214,7 @@ p {
 }
 
 .results-container p {
-    color: var(--hacker-text);
+    color: #99ffaa;
     text-align: left;
     margin-bottom: 10px;
 }
@@ -357,6 +357,7 @@ p {
     margin-bottom: 5px;
     position: relative;
     padding-left: 5px;
+    color: #99ffaa;
 }
 
 .console-line::before {
@@ -430,6 +431,7 @@ p {
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: var(--hacker-border) var(--hacker-box-bg);
+    color: #99ffaa;
 }
 
 .collapsible-section.open .collapsible-content {
@@ -454,6 +456,7 @@ p {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #99ffaa;
 }
 
 .site-item::before {

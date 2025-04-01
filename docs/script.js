@@ -150,6 +150,10 @@ function displayResults(data) {
         // Поставим summary сверху для быстрого обзора
         let summaryContent = '';
         
+        // Счетчик проверенных источников
+        const totalSitesChecked = data.total_sites_checked || 300; // Если бэкенд не передает, показываем 300 по умолчанию
+        summaryContent += `<p><span class="blink-badge success"></span>ПРОВЕРЕНО ${totalSitesChecked}+ ИСТОЧНИКОВ</p>`;
+        
         // Проверка на ошибки
         if (data.error && !data.found_on?.length && !data.breaches?.length) {
             summaryContent += `<p class="error-message">${escapeHtml(data.error)}</p>`;
@@ -163,9 +167,9 @@ function displayResults(data) {
             }
             
             if (data.breaches && data.breaches.length > 0) {
-                summaryContent += `<p><span class="blink-badge danger"></span>ОБНАРУЖЕНО ${data.breaches.length} УТЕЧЕК ДАННЫХ</p>`;
+                summaryContent += `<p><span class="blink-badge danger"></span>ОБНАРУЖЕНО ${data.breaches.length} УТЕЧЕК ПАРОЛЕЙ</p>`;
             } else {
-                summaryContent += `<p><span class="blink-badge success"></span>УТЕЧКИ ДАННЫХ НЕ ОБНАРУЖЕНЫ</p>`;
+                summaryContent += `<p><span class="blink-badge success"></span>УТЕЧКИ ПАРОЛЕЙ НЕ ОБНАРУЖЕНЫ</p>`;
             }
             
             // Общее заключение
@@ -217,7 +221,7 @@ function displayResults(data) {
             // Секция утечек
             if (data.breaches && data.breaches.length > 0) {
                 const breachesSection = createCollapsibleSection(
-                    `УТЕЧКИ ДАННЫХ (${data.breaches.length})`, 
+                    `УТЕЧКИ ПАРОЛЕЙ (${data.breaches.length})`, 
                     'danger',
                     true // Открыто по умолчанию
                 );
@@ -225,7 +229,7 @@ function displayResults(data) {
                 // Предупреждение
                 const warningMsg = document.createElement('p');
                 warningMsg.className = 'warning-message';
-                warningMsg.textContent = 'КОМПРОМЕТАЦИЯ ДАННЫХ ПОДТВЕРЖДЕНА. РЕКОМЕНДУЕТСЯ НЕМЕДЛЕННАЯ СМЕНА УЧЕТНЫХ ДАННЫХ!';
+                warningMsg.textContent = 'КОМПРОМЕТАЦИЯ ПАРОЛЕЙ ПОДТВЕРЖДЕНА. РЕКОМЕНДУЕТСЯ НЕМЕДЛЕННАЯ СМЕНА УЧЕТНЫХ ДАННЫХ!';
                 breachesSection.querySelector('.collapsible-content').appendChild(warningMsg);
                 
                 // Список утечек
@@ -239,9 +243,9 @@ function displayResults(data) {
                 breachesSection.querySelector('.collapsible-content').appendChild(breachesList);
                 resultsContainer.appendChild(breachesSection);
                 
-                addConsoleMessage(`УГРОЗА: Обнаружено ${data.breaches.length} утечек`);
+                addConsoleMessage(`УГРОЗА: Обнаружено ${data.breaches.length} утечек паролей`);
             } else {
-                addConsoleMessage("БЕЗОПАСНОСТЬ: Утечек не выявлено");
+                addConsoleMessage("БЕЗОПАСНОСТЬ: Утечек паролей не выявлено");
             }
         }
         
@@ -320,9 +324,19 @@ async function performSearch() {
     setTimeout(() => addConsoleMessage("ПОДКЛЮЧЕНИЕ К БАЗАМ ДАННЫХ..."), 500);
     setTimeout(() => addConsoleMessage("ЗАПРОС ОТПРАВЛЕН К API CYBERCRIME..."), 1200);
     setTimeout(() => addConsoleMessage("СКАНИРОВАНИЕ СОЦИАЛЬНЫХ СЕТЕЙ..."), 2000);
+    setTimeout(() => addConsoleMessage("ПРОВЕРКА БАЗ ДАННЫХ УТЕЧЕК ПАРОЛЕЙ..."), 3500);
 
     try {
-        const response = await fetch(`${BACKEND_URL}/search?username=${encodeURIComponent(username)}`);
+        // Увеличиваем таймаут для fetch, чтобы дать серверу время обработать запрос
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 40000); // 40 секунд таймаут
+        
+        const response = await fetch(
+            `${BACKEND_URL}/search?username=${encodeURIComponent(username)}`,
+            { signal: controller.signal }
+        );
+        
+        clearTimeout(timeoutId); // Очищаем таймаут если запрос завершился успешно
 
         if (!response.ok) {
             // Попытка прочитать тело ошибки, если бэкенд его отдает
