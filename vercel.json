@@ -4,7 +4,10 @@
         {
             "src": "backend/main.go",
             "use": "@vercel/go",
-            "config": { "maxLambdaSize": "50mb" }
+            "config": { 
+                "maxLambdaSize": "50mb",
+                "includeFiles": ["backend/data.json"]
+            }
         }
     ],
     "routes": [
