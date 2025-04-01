@@ -131,6 +131,8 @@ p {
     position: relative;
     overflow: hidden;
     font-family: 'Courier New', monospace;
+    min-width: 80px;
+    white-space: nowrap;
 }
 
 #searchButton:hover {
@@ -547,11 +549,19 @@ p {
     
     .search-form {
         padding: 8px;
+        flex-direction: column;
     }
     
-    #usernameInput, #searchButton {
+    #usernameInput {
         font-size: 14px;
         padding: 10px;
+        margin-bottom: 8px;
+    }
+    
+    #searchButton {
+        font-size: 14px;
+        padding: 10px;
+        width: 100%;
     }
     
     .status-console, .results-container {
