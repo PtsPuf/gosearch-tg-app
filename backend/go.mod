@@ -1,3 +1,3 @@
-module gosearch-tg-backend // Using a more descriptive module name
+module gosearch-tg-backend
 
-go 1.21 // Or your specific Go version used locally
+go 1.21
