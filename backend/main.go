@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	_ "embed" // Импортируем для //go:embed
 	"encoding/json"
 	"fmt"
 	"io"
@@ -26,27 +25,96 @@ type SiteInfo struct {
 	// UserAgent string `json:"user_agent,omitempty"`
 }
 
-// Встраиваем data.json в переменную sitesData
-// Путь "data.json" здесь относителен к файлу main.go
-//
-//go:embed data.json
-var sitesData []byte
+// Вместо embed просто определяем минимальный набор сайтов для проверки
+// Это позволит избежать проблем сборки
+const sitesDataStr = `[
+	{
+		"name": "GitHub",
+		"base_url": "https://github.com/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "Twitter",
+		"base_url": "https://twitter.com/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "Instagram",
+		"base_url": "https://www.instagram.com/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "Reddit",
+		"base_url": "https://www.reddit.com/user/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "TikTok",
+		"base_url": "https://www.tiktok.com/@{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "Facebook",
+		"base_url": "https://www.facebook.com/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "LinkedIn",
+		"base_url": "https://www.linkedin.com/in/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "YouTube",
+		"base_url": "https://www.youtube.com/@{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "VK",
+		"base_url": "https://vk.com/{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	},
+	{
+		"name": "Medium",
+		"base_url": "https://medium.com/@{}",
+		"url_probe": "",
+		"errorType": "status_code",
+		"errorCode": 404
+	}
+]`
 
 // Глобальная переменная для хранения данных сайтов
 var sites []SiteInfo
 var once sync.Once // Для однократной загрузки data.json
 
-// Функция для загрузки data.json
+// Функция для загрузки данных о сайтах
 func loadSites() {
 	once.Do(func() {
-		// Читаем из встроенной переменной sitesData
-		if err := json.Unmarshal(sitesData, &sites); err != nil {
-			log.Fatalf("Error unmarshalling embedded data.json: %v", err)
+		// Читаем из строковой константы
+		if err := json.Unmarshal([]byte(sitesDataStr), &sites); err != nil {
+			log.Fatalf("Error unmarshalling embedded sites data: %v", err)
 		}
 		if len(sites) == 0 {
-			log.Fatalf("Embedded data.json seems empty or invalid")
+			log.Fatalf("Embedded sites data seems empty or invalid")
 		}
-		log.Printf("Loaded %d sites from embedded data.json", len(sites))
+		log.Printf("Loaded %d sites from embedded data", len(sites))
 	})
 }
 
@@ -273,7 +341,7 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	// Handle root endpoint
 	if r.URL.Path == "/" {
 		w.Header().Set("Content-Type", "text/plain")
-		w.Write([]byte("GoSearch API (Vercel) with multi-site check (embedded data)"))
+		w.Write([]byte("GoSearch API (Vercel) with multi-site check - Simplified Version"))
 		return
 	}
 
