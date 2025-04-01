@@ -1,26 +1,74 @@
-/* Стили для Telegram Mini App */
+/* Хакерские стили для приложения */
+:root {
+    --hacker-bg: #000000;
+    --hacker-text: #00ff00;
+    --hacker-dim: #005500;
+    --hacker-highlight: #00ff55;
+    --hacker-accent: #ff0000;
+    --hacker-box-bg: #001100;
+    --hacker-border: #003300;
+}
+
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    font-family: 'Courier New', monospace;
     margin: 0;
     padding: 15px;
-    background-color: var(--tg-theme-bg-color, #ffffff); /* Цвет фона из темы ТГ */
-    color: var(--tg-theme-text-color, #000000); /* Цвет текста из темы ТГ */
-    transition: background-color 0.3s, color 0.3s;
+    background-color: var(--hacker-bg);
+    color: var(--hacker-text);
+    transition: all 0.3s;
+    line-height: 1.4;
+    overflow-x: hidden;
 }
 
 .container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
+    position: relative;
+}
+
+.container::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+        0deg,
+        rgba(0, 15, 0, 0.15),
+        rgba(0, 15, 0, 0.15) 1px,
+        transparent 1px,
+        transparent 2px
+    );
+    z-index: 1;
 }
 
 h1 {
-    color: var(--tg-theme-text-color, #000000);
+    color: var(--hacker-highlight);
     text-align: center;
     margin-bottom: 20px;
+    position: relative;
+    text-shadow: 0 0 5px var(--hacker-text);
+    font-variant: small-caps;
+    letter-spacing: 2px;
+}
+
+h1::before {
+    content: "> ";
+}
+
+h1::after {
+    content: "_";
+    animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
 }
 
 p {
-    color: var(--tg-theme-hint-color, #666666); /* Цвет подсказок */
+    color: var(--hacker-dim);
     text-align: center;
     margin-bottom: 25px;
     line-height: 1.5;
@@ -28,54 +76,101 @@ p {
 
 .search-form {
     display: flex;
-    gap: 10px; /* Расстояние между полем и кнопкой */
+    gap: 10px;
     margin-bottom: 25px;
+    border: 1px solid var(--hacker-border);
+    padding: 10px;
+    background-color: rgba(0, 20, 0, 0.5);
+    border-radius: 0;
+    position: relative;
+}
+
+.search-form::before {
+    content: "> SEARCH_MODULE:";
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    font-size: 12px;
+    background-color: var(--hacker-bg);
+    padding: 0 5px;
+    color: var(--hacker-highlight);
 }
 
 #usernameInput {
-    flex-grow: 1; /* Занимает все доступное пространство */
+    flex-grow: 1;
     padding: 12px 15px;
-    border: 1px solid var(--tg-theme-hint-color, #cccccc);
-    border-radius: 8px;
+    border: 1px solid var(--hacker-border);
+    border-radius: 0;
     font-size: 16px;
-    background-color: var(--tg-theme-bg-color, #ffffff);
-    color: var(--tg-theme-text-color, #000000);
-    outline: none; /* Убираем обводку при фокусе */
+    background-color: var(--hacker-box-bg);
+    color: var(--hacker-text);
+    outline: none;
+    font-family: 'Courier New', monospace;
+    caret-color: var(--hacker-highlight);
 }
 
 #usernameInput:focus {
-    border-color: var(--tg-theme-button-color, #007aff); /* Цвет кнопки при фокусе */
+    border-color: var(--hacker-highlight);
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
 }
 
 #searchButton {
     padding: 12px 20px;
-    background-color: var(--tg-theme-button-color, #007aff); /* Основной цвет кнопки ТГ */
-    color: var(--tg-theme-button-text-color, #ffffff); /* Цвет текста кнопки ТГ */
-    border: none;
-    border-radius: 8px;
+    background-color: var(--hacker-box-bg);
+    color: var(--hacker-text);
+    border: 1px solid var(--hacker-border);
+    border-radius: 0;
     cursor: pointer;
     font-size: 16px;
-    font-weight: 500;
-    transition: background-color 0.2s;
+    font-weight: bold;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    font-family: 'Courier New', monospace;
 }
 
 #searchButton:hover {
-    opacity: 0.9;
+    background-color: var(--hacker-border);
+    border-color: var(--hacker-highlight);
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
 }
 
 #searchButton:active {
-    opacity: 0.8;
+    background-color: var(--hacker-highlight);
+    color: var(--hacker-bg);
+}
+
+#searchButton::after {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        rgba(0, 255, 0, 0.2),
+        transparent,
+        rgba(0, 255, 0, 0.2)
+    );
+    transform: rotate(30deg);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+#searchButton:hover::after {
+    opacity: 1;
 }
 
 /* Прелоадер */
 .loader {
-    border: 4px solid var(--tg-theme-hint-color, #f3f3f3); /* Light grey */
-    border-top: 4px solid var(--tg-theme-button-color, #3498db); /* Blue */
-    border-radius: 50%;
+    border: 4px solid var(--hacker-dim);
+    border-top: 4px solid var(--hacker-highlight);
+    border-radius: 0;
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
     margin: 20px auto;
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
 }
 
 @keyframes spin {
@@ -87,20 +182,39 @@ p {
 .results-container {
     margin-top: 20px;
     padding: 15px;
-    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
-    border-radius: 8px;
+    background-color: var(--hacker-box-bg);
+    border: 1px solid var(--hacker-border);
+    border-radius: 0;
+    position: relative;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.1);
+}
+
+.results-container::before {
+    content: "> SCAN_RESULTS:";
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    font-size: 12px;
+    background-color: var(--hacker-bg);
+    padding: 0 5px;
+    color: var(--hacker-highlight);
 }
 
 .results-container h2 {
     margin-top: 0;
     margin-bottom: 15px;
-    color: var(--tg-theme-text-color, #000000);
-    border-bottom: 1px solid var(--tg-theme-hint-color, #dddddd);
+    color: var(--hacker-highlight);
+    border-bottom: 1px solid var(--hacker-border);
     padding-bottom: 10px;
+    text-shadow: 0 0 5px var(--hacker-text);
+}
+
+.results-container h2::before {
+    content: "# ";
 }
 
 .results-container p {
-    color: var(--tg-theme-text-color, #000000);
+    color: var(--hacker-text);
     text-align: left;
     margin-bottom: 10px;
 }
@@ -112,40 +226,150 @@ p {
 }
 
 .results-container li {
-    background-color: var(--tg-theme-bg-color, #ffffff);
+    background-color: rgba(0, 20, 0, 0.3);
     margin-bottom: 8px;
     padding: 10px 15px;
-    border-radius: 5px;
-    border: 1px solid var(--tg-theme-hint-color, #eeeeee);
+    border: 1px solid var(--hacker-border);
+    transition: all 0.3s;
+    position: relative;
+}
+
+.results-container li::before {
+    content: "> ";
+    color: var(--hacker-highlight);
+}
+
+.results-container li:hover {
+    background-color: var(--hacker-border);
+    transform: translateX(5px);
 }
 
 .result-section {
     margin-bottom: 20px;
+    padding-left: 10px;
+    border-left: 3px solid var(--hacker-border);
 }
 
 .result-section h3 {
     margin-bottom: 10px;
-    color: var(--tg-theme-text-color, #333333);
+    color: var(--hacker-highlight);
+    letter-spacing: 1px;
+}
+
+.result-section h3::before {
+    content: "## ";
 }
 
 .error-message {
-    color: var(--tg-theme-destructive-text-color, #ff3b30); /* Цвет для ошибок */
+    color: var(--hacker-accent);
     font-weight: bold;
     text-align: center;
+    background-color: rgba(30, 0, 0, 0.3);
+    padding: 10px;
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    text-shadow: 0 0 5px var(--hacker-accent);
+}
+
+.error-message::before {
+    content: "[ERROR] ";
 }
 
 .warning-message {
-    color: #ffa500; /* Оранжевый для предупреждений */
+    color: #ffa500;
     font-weight: bold;
     margin-top: 15px;
     padding: 10px;
-    background-color: rgba(255, 165, 0, 0.1);
-    border: 1px solid #ffa500;
-    border-radius: 5px;
+    background-color: rgba(50, 25, 0, 0.3);
+    border: 1px solid rgba(255, 165, 0, 0.3);
+    text-shadow: 0 0 5px #ffa500;
+}
+
+.warning-message::before {
+    content: "[WARNING] ";
 }
 
 .success-message {
-    color: #28a745; /* Зеленый для успеха */
+    color: var(--hacker-highlight);
     font-weight: bold;
     text-align: center;
+    padding: 10px;
+    background-color: rgba(0, 30, 0, 0.3);
+    border: 1px solid var(--hacker-border);
+    text-shadow: 0 0 5px var(--hacker-text);
+}
+
+.success-message::before {
+    content: "[SUCCESS] ";
+}
+
+/* Добавим декоративные элементы для хакерского интерфейса */
+.matrix-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    overflow: hidden;
+    z-index: -1;
+}
+
+.glitch {
+    animation: glitch 3s infinite;
+}
+
+@keyframes glitch {
+    0% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+    100% { transform: translate(0); }
+}
+
+/* Стили для консоли статуса */
+.status-console {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--hacker-box-bg);
+    border: 1px solid var(--hacker-border);
+    font-family: 'Courier New', monospace;
+    color: var(--hacker-text);
+    position: relative;
+    min-height: 60px;
+    max-height: 150px;
+    overflow-y: auto;
+}
+
+.status-console::before {
+    content: "> SYSTEM_LOG:";
+    position: absolute;
+    top: -15px;
+    left: 10px;
+    font-size: 12px;
+    background-color: var(--hacker-bg);
+    padding: 0 5px;
+    color: var(--hacker-highlight);
+}
+
+.console-line {
+    line-height: 1.5;
+    margin-bottom: 5px;
+    position: relative;
+    padding-left: 5px;
+}
+
+.console-line::before {
+    content: "$";
+    color: var(--hacker-highlight);
+    margin-right: 10px;
+}
+
+.cursor {
+    display: inline-block;
+    width: 8px;
+    height: 15px;
+    background-color: var(--hacker-text);
+    animation: blink 1s step-end infinite;
+    vertical-align: middle;
 } 

@@ -3,25 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoSearch Проверка</title>
+    <title>GoSearch - OSINT Сканер</title>
     <link rel="stylesheet" href="style.css">
     <!-- Подключение Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
+    <!-- Матричный фон -->
+    <div class="matrix-bg" id="matrixBg"></div>
 
     <div class="container">
-        <h1>Проверка цифрового следа</h1>
-        <p>Введите имя пользователя (никнейм), чтобы найти его упоминания на различных сайтах и проверить возможные утечки данных с помощью GoSearch.</p>
+        <h1 class="glitch">ЦИФРОВОЙ СЛЕДОПЫТ</h1>
+        <p>Выполните анализ цифрового следа пользователя по имени или никнейму. Система проверит наличие информации во всех доступных реестрах и базах данных.</p>
 
         <div class="search-form">
-            <input type="text" id="usernameInput" placeholder="Введите имя пользователя...">
-            <button id="searchButton">Найти</button>
+            <input type="text" id="usernameInput" placeholder="Введите имя цели...">
+            <button id="searchButton">СКАНИРОВАТЬ</button>
         </div>
 
         <div id="loader" class="loader" style="display: none;"></div>
 
         <div id="results" class="results-container" style="display: none;"></div>
+        
+        <div id="statusConsole" class="status-console">
+            <div class="console-line">ГОТОВ К СКАНИРОВАНИЮ... <span class="cursor">_</span></div>
+        </div>
     </div>
 
     <script src="script.js"></script>
