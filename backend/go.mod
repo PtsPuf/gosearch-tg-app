@@ -1,3 +1,3 @@
-module myapp/backend // Замените myapp/backend на ваше имя модуля
+module gosearch-tg-backend // Using a more descriptive module name
 
-go 1.21 // Укажите вашу версию Go
+go 1.21 // Or your specific Go version used locally
