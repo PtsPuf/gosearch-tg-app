@@ -1,0 +1,17 @@
+services:
+  # Название веб-сервиса (должно совпадать с тем, что на Render, или будет создан новый)
+  - name: gosearch-tg-backend # Убедись, что имя совпадает с твоим сервисом на Render!
+    type: web
+    # Указываем, что используем Docker
+    runtime: docker
+    # Указываем путь к Dockerfile относительно корня репозитория
+    dockerfilePath: ./Dockerfile
+    # Путь к контексту Docker (корень репозитория)
+    dockerContext: .
+    # Настройки автодеплоя при изменениях в ветке main
+    autoDeploy: true
+    branch: main # Убедись, что это твоя основная ветка
+    # Можно добавить переменные окружения, если нужны
+    # envVars:
+    #   - key: EXAMPLE_VAR
+    #     value: example_value 
