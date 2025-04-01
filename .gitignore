@@ -1,0 +1,16 @@
+# Compiled Go binaries
+backend/server
+backend/server.exe
+backend/*.exe
+backend/*.test
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+
+# Dependency directories (if used locally)
+vendor/ 

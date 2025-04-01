@@ -1,0 +1,151 @@
+/* Стили для Telegram Mini App */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 15px;
+    background-color: var(--tg-theme-bg-color, #ffffff); /* Цвет фона из темы ТГ */
+    color: var(--tg-theme-text-color, #000000); /* Цвет текста из темы ТГ */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+h1 {
+    color: var(--tg-theme-text-color, #000000);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+p {
+    color: var(--tg-theme-hint-color, #666666); /* Цвет подсказок */
+    text-align: center;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.search-form {
+    display: flex;
+    gap: 10px; /* Расстояние между полем и кнопкой */
+    margin-bottom: 25px;
+}
+
+#usernameInput {
+    flex-grow: 1; /* Занимает все доступное пространство */
+    padding: 12px 15px;
+    border: 1px solid var(--tg-theme-hint-color, #cccccc);
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: var(--tg-theme-bg-color, #ffffff);
+    color: var(--tg-theme-text-color, #000000);
+    outline: none; /* Убираем обводку при фокусе */
+}
+
+#usernameInput:focus {
+    border-color: var(--tg-theme-button-color, #007aff); /* Цвет кнопки при фокусе */
+}
+
+#searchButton {
+    padding: 12px 20px;
+    background-color: var(--tg-theme-button-color, #007aff); /* Основной цвет кнопки ТГ */
+    color: var(--tg-theme-button-text-color, #ffffff); /* Цвет текста кнопки ТГ */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s;
+}
+
+#searchButton:hover {
+    opacity: 0.9;
+}
+
+#searchButton:active {
+    opacity: 0.8;
+}
+
+/* Прелоадер */
+.loader {
+    border: 4px solid var(--tg-theme-hint-color, #f3f3f3); /* Light grey */
+    border-top: 4px solid var(--tg-theme-button-color, #3498db); /* Blue */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 20px auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Контейнер результатов */
+.results-container {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+    border-radius: 8px;
+}
+
+.results-container h2 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--tg-theme-text-color, #000000);
+    border-bottom: 1px solid var(--tg-theme-hint-color, #dddddd);
+    padding-bottom: 10px;
+}
+
+.results-container p {
+    color: var(--tg-theme-text-color, #000000);
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.results-container ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.results-container li {
+    background-color: var(--tg-theme-bg-color, #ffffff);
+    margin-bottom: 8px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    border: 1px solid var(--tg-theme-hint-color, #eeeeee);
+}
+
+.result-section {
+    margin-bottom: 20px;
+}
+
+.result-section h3 {
+    margin-bottom: 10px;
+    color: var(--tg-theme-text-color, #333333);
+}
+
+.error-message {
+    color: var(--tg-theme-destructive-text-color, #ff3b30); /* Цвет для ошибок */
+    font-weight: bold;
+    text-align: center;
+}
+
+.warning-message {
+    color: #ffa500; /* Оранжевый для предупреждений */
+    font-weight: bold;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: rgba(255, 165, 0, 0.1);
+    border: 1px solid #ffa500;
+    border-radius: 5px;
+}
+
+.success-message {
+    color: #28a745; /* Зеленый для успеха */
+    font-weight: bold;
+    text-align: center;
+} 

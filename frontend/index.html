@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoSearch Проверка</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключение Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Проверка цифрового следа</h1>
+        <p>Введите имя пользователя (никнейм), чтобы найти его упоминания на различных сайтах и проверить возможные утечки данных с помощью GoSearch.</p>
+
+        <div class="search-form">
+            <input type="text" id="usernameInput" placeholder="Введите имя пользователя...">
+            <button id="searchButton">Найти</button>
+        </div>
+
+        <div id="loader" class="loader" style="display: none;"></div>
+
+        <div id="results" class="results-container" style="display: none;"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
