@@ -9,9 +9,8 @@ const searchButton = document.getElementById('searchButton');
 const loader = document.getElementById('loader');
 const resultsContainer = document.getElementById('results');
 
-// URL вашего бэкенда (замените на URL вашего сервиса на Render.com после деплоя)
-// Для локального тестирования можно использовать http://localhost:8080
-const BACKEND_URL = 'https://gosearch-tg-backend.onrender.com'; // ЗАМЕНИТЬ!
+// URL вашего бэкенда
+const BACKEND_URL = 'https://gosearch-tg-app.vercel.app'; // Updated to Vercel URL
 // const BACKEND_URL = 'http://localhost:8080'; // Для локального теста
 
 // Функция для отображения результатов
