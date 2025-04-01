@@ -11,6 +11,8 @@ services:
     # Настройки автодеплоя при изменениях в ветке main
     autoDeploy: true
     branch: main # Убедись, что это твоя основная ветка
+    # Добавляем команду запуска явно
+    startCommand: /app/server
     # Можно добавить переменные окружения, если нужны
     # envVars:
     #   - key: EXAMPLE_VAR
