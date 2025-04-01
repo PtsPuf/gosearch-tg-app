@@ -1,9 +1,15 @@
 {
     "version": 2,
+    "functions": {
+        "backend/main.go": {
+            "runtime": "go1.x"
+        }
+    },
     "builds": [
         {
             "src": "backend/main.go",
-            "use": "@vercel/go"
+            "use": "@vercel/go",
+            "config": { "maxLambdaSize": "50mb" }
         }
     ],
     "routes": [
