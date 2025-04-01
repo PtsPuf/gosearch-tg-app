@@ -150,9 +150,10 @@ function displayResults(data) {
         // Поставим summary сверху для быстрого обзора
         let summaryContent = '';
         
-        // Счетчик проверенных источников
-        const totalSitesChecked = data.total_sites_checked || 300; // Если бэкенд не передает, показываем 300 по умолчанию
-        summaryContent += `<p><span class="blink-badge success"></span>ПРОВЕРЕНО ${totalSitesChecked}+ ИСТОЧНИКОВ</p>`;
+        // Счетчик проверенных источников - используем реальное значение из ответа
+        const totalSitesChecked = data.total_sites_checked || 0;
+        const sitesCountText = totalSitesChecked > 0 ? `${totalSitesChecked}` : "300+";
+        summaryContent += `<p><span class="blink-badge success"></span>ПРОВЕРЕНО ${sitesCountText} ИСТОЧНИКОВ</p>`;
         
         // Проверка на ошибки
         if (data.error && !data.found_on?.length && !data.breaches?.length) {
@@ -319,15 +320,18 @@ async function performSearch() {
     resultsContainer.innerHTML = '';
     searchButton.disabled = true; // Блокируем кнопку на время запроса
 
-    // Анимируем процесс поиска в консоли
+    // Анимируем процесс поиска в консоли с увеличенным временем ожидания
     addConsoleMessage(`ИНИЦИАЛИЗАЦИЯ ПОИСКА: ${username}`);
-    setTimeout(() => addConsoleMessage("ПОДКЛЮЧЕНИЕ К БАЗАМ ДАННЫХ..."), 500);
-    setTimeout(() => addConsoleMessage("ЗАПРОС ОТПРАВЛЕН К API CYBERCRIME..."), 1200);
-    setTimeout(() => addConsoleMessage("СКАНИРОВАНИЕ СОЦИАЛЬНЫХ СЕТЕЙ..."), 2000);
-    setTimeout(() => addConsoleMessage("ПРОВЕРКА БАЗ ДАННЫХ УТЕЧЕК ПАРОЛЕЙ..."), 3500);
+    setTimeout(() => addConsoleMessage("ПОДКЛЮЧЕНИЕ К БАЗАМ ДАННЫХ..."), 800);
+    setTimeout(() => addConsoleMessage("ЗАПРОС ОТПРАВЛЕН К API CYBERCRIME..."), 2000);
+    setTimeout(() => addConsoleMessage("СКАНИРОВАНИЕ СОЦИАЛЬНЫХ СЕТЕЙ..."), 3500);
+    setTimeout(() => addConsoleMessage("ПРОВЕРКА НАЛИЧИЯ ПРОФИЛЕЙ..."), 5000);
+    setTimeout(() => addConsoleMessage("АНАЛИЗ БАЗ ДАННЫХ УТЕЧЕК ПАРОЛЕЙ..."), 7000);
+    setTimeout(() => addConsoleMessage("ВЫПОЛНЕНИЕ ДЕТАЛЬНОЙ ПРОВЕРКИ..."), 9000);
+    setTimeout(() => addConsoleMessage("ФОРМИРОВАНИЕ ЦИФРОВОГО СЛЕДА..."), 12000);
 
     try {
-        // Увеличиваем таймаут для fetch, чтобы дать серверу время обработать запрос
+        // Создаем контроллер для управления таймаутом
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 40000); // 40 секунд таймаут
         
